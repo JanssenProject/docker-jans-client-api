@@ -12,9 +12,9 @@ distributions_managed = {
         "url": "https://maven.jans.io/maven/org/jans/auth-server-client/{}",
         "source_package": "auth-server-client-{}-jar-with-dependencies.jar"
     },
-    "auth-server-server": {
-        "url": "https://maven.jans.io/maven/org/jans/auth-server-server/{}",
-        "source_package": "auth-server-server-{}.war"
+    "auth-server": {
+        "url": "https://maven.jans.io/maven/org/jans/auth-server/{}",
+        "source_package": "auth-server-{}.war"
     },
     "scim-server": {
         "url": "https://maven.jans.io/maven/org/jans/scim-server/{}",

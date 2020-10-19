@@ -20,11 +20,11 @@ RUN apk update \
 ENV JANS_VERSION=5.0.0-SNAPSHOT
 ENV JANS_BUILD_DATE="2020-09-24 08:33"
 
-RUN wget -q https://ox.gluu.org/maven/org/gluu/oxd-server/${JANS_VERSION}/oxd-server-${JANS_VERSION}-distribution.zip -O /oxd.zip \
-    && mkdir -p /opt/oxd-server \
-    && unzip -qq /oxd.zip -d /opt/oxd-server \
-    && rm /oxd.zip \
-    && rm -rf /opt/oxd-server/conf/oxd-server.keystore /opt/oxd-server/conf/oxd-server.yml
+RUN wget -q https://ox.gluu.org/maven/org/gluu/client-api/${JANS_VERSION}/client-api-${JANS_VERSION}-distribution.zip -O /client-api.zip \
+    && mkdir -p /opt/client-api \
+    && unzip -qq /client-api.zip -d /opt/client-api \
+    && rm /client-api.zip \
+    && rm -rf /opt/client-api/conf/client-api.keystore /opt/client-api/conf/client-api.yml
 
 EXPOSE 8443 8444
 
@@ -104,7 +104,7 @@ ENV JANS_PERSISTENCE_TYPE=ldap \
     JANS_COUCHBASE_SCAN_CONSISTENCY=not_bounded
 
 # =======
-# oxD ENV
+# client-api ENV
 # =======
 
 ENV JANS_CLIENT_API_APPLICATION_CERT_CN="localhost" \

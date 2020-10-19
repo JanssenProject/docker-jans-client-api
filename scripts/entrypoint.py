@@ -50,7 +50,7 @@ def generate_x509(cert_file, key_file, cert_cn):
 
 def generate_keystore(cert_file, key_file, keystore_file, keystore_password):
     out, err, code = exec_cmd(
-        "openssl pkcs12 -export -name oxd-server "
+        "openssl pkcs12 -export -name client-api "
         f"-out {keystore_file} "
         f"-inkey {key_file} "
         f"-in {cert_file} "
@@ -67,15 +67,15 @@ class Connector:
 
     @property
     def cert_file(self):
-        return f"/etc/certs/oxd_{self.type}.crt"
+        return f"/etc/certs/client_api_{self.type}.crt"
 
     @property
     def key_file(self):
-        return f"/etc/certs/oxd_{self.type}.key"
+        return f"/etc/certs/client_api_{self.type}.key"
 
     @property
     def keystore_file(self):
-        return f"/etc/certs/oxd_{self.type}.keystore"
+        return f"/etc/certs/client_api_{self.type}.keystore"
 
     @property
     def cert_cn(self):
@@ -88,33 +88,33 @@ class Connector:
 
     def sync_x509(self):
         try:
-            self.manager.secret.to_file(f"oxd_{self.type}_cert", self.cert_file)
-            self.manager.secret.to_file(f"oxd_{self.type}_key", self.key_file)
+            self.manager.secret.to_file(f"client_api_{self.type}_cert", self.cert_file)
+            self.manager.secret.to_file(f"client_api_{self.type}_key", self.key_file)
         except TypeError:
             generate_x509(self.cert_file, self.key_file, self.cert_cn)
             # save cert and key to secrets for later use
-            self.manager.secret.from_file(f"oxd_{self.type}_cert", self.cert_file)
-            self.manager.secret.from_file(f"oxd_{self.type}_key", self.key_file)
+            self.manager.secret.from_file(f"client_api_{self.type}_cert", self.cert_file)
+            self.manager.secret.from_file(f"client_api_{self.type}_key", self.key_file)
 
     def get_keystore_password(self):
-        password = manager.secret.get(f"oxd_{self.type}_keystore_password")
+        password = manager.secret.get(f"client_api_{self.type}_keystore_password")
 
         if not password:
             password = get_random_chars()
-            manager.secret.set(f"oxd_{self.type}_keystore_password", password)
+            manager.secret.set(f"client_api_{self.type}_keystore_password", password)
         return password
 
     def sync_keystore(self):
         # if there are no secrets, ``TypeError`` will be thrown
         try:
             self.manager.secret.to_file(
-                f"oxd_{self.type}_jks_base64", self.keystore_file, decode=True, binary_mode=True,
+                f"client_api_{self.type}_jks_base64", self.keystore_file, decode=True, binary_mode=True,
             )
         except TypeError:
             generate_keystore(self.cert_file, self.key_file, self.keystore_file, self.get_keystore_password())
             # save keystore to secrets for later use
             self.manager.secret.from_file(
-                f"oxd_{self.type}_jks_base64", self.keystore_file, encode=True, binary_mode=True,
+                f"client_api_{self.type}_jks_base64", self.keystore_file, encode=True, binary_mode=True,
             )
 
     def sync(self):
@@ -122,13 +122,13 @@ class Connector:
         self.sync_keystore()
 
 
-def render_oxd_config():
+def render_client_api_config():
     app_connector = Connector(manager, "application")
     app_connector.sync()
     admin_connector = Connector(manager, "admin")
     admin_connector.sync()
 
-    with open("/app/templates/oxd-server.yml.tmpl") as f:
+    with open("/app/templates/client_api.yml.tmpl") as f:
         data = safe_load(f.read())
 
     data["server"]["applicationConnectors"][0]["keyStorePassword"] = app_connector.get_keystore_password()
@@ -153,7 +153,7 @@ def render_oxd_config():
         if addr
     ]
 
-    with open("/opt/oxd-server/conf/oxd-server.yml", "w") as f:
+    with open("/opt/client-api/conf/client_api.yml", "w") as f:
         f.write(safe_dump(data))
 
 
@@ -184,8 +184,8 @@ def main():
 
     get_gluu_cert()
 
-    # if not os.path.isfile("/opt/oxd-server/oxd-server.yml"):
-    render_oxd_config()
+    # if not os.path.isfile("/opt/client-api/client-api.yml"):
+    render_client_api_config()
 
 
 if __name__ == "__main__":

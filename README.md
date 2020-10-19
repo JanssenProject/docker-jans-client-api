@@ -1,10 +1,10 @@
 # Overview
 
-Docker image packaging for oxd.
+Docker image packaging for client-api.
 
 ## Versions
 
-See [Releases](https://github.com/GluuFederation/docker-oxd/releases) for stable versions.
+See [Releases](https://github.com/GluuFederation/docker-client-api/releases) for stable versions.
 For bleeding-edge/unstable version, use `janssenproject/client-api`.
 
 ## Environment Variables
@@ -52,6 +52,6 @@ The following environment variables are supported by the container:
 - `JANS_COUCHBASE_SCAN_CONSISTENCY`: Default scan consistency; one of `not_bounded`, `request_plus`, or `statement_plus` (default to `not_bounded`).
 - `JANS_CLIENT_API_APPLICATION_CERT_CN`: CommonName used in application certificate subject
 - `JANS_CLIENT_API_ADMIN_CERT_CN`: CommonName used in admin certificate subject
-- `JANS_CLIENT_API_BIND_IP_ADDRESSES`: A comma-separated host/IP address that are allowed to access oxd (default to `*`).
+- `JANS_CLIENT_API_BIND_IP_ADDRESSES`: A comma-separated host/IP address that are allowed to access client-api (default to `*`).
 - `JANS_JAVA_OPTIONS`: Java options passed to entrypoint, i.e. `-Xmx1024m` (default to empty-string).
 - `JANS_SSL_CERT_FROM_SECRETS`: Determine whether to get SSL cert from secrets backend (default to `false`). Note that the flag will take effect only if there's no mounted `/etc/certs/gluu_https.crt` file.
