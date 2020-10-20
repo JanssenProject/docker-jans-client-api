@@ -5,7 +5,7 @@ from ruamel.yaml import safe_dump
 
 from jans.pycloudlib import get_manager
 from jans.pycloudlib.persistence import render_couchbase_properties
-from jans.pycloudlib.persistence import render_gluu_properties
+from jans.pycloudlib.persistence import render_jans_properties
 from jans.pycloudlib.persistence import render_hybrid_properties
 from jans.pycloudlib.persistence import render_ldap_properties
 from jans.pycloudlib.persistence import render_salt
@@ -21,16 +21,16 @@ from jans.pycloudlib.utils import as_boolean
 manager = get_manager()
 
 
-def get_gluu_cert():
-    if not os.path.isfile("/etc/certs/gluu_https.crt"):
+def get_web_cert():
+    if not os.path.isfile("/etc/certs/web_https.crt"):
         if as_boolean(os.environ.get("CN_SSL_CERT_FROM_SECRETS", False)):
-            manager.secret.to_file("ssl_cert", "/etc/certs/gluu_https.crt")
+            manager.secret.to_file("ssl_cert", "/etc/certs/web_https.crt")
         else:
-            get_server_certificate(manager.config.get("hostname"), 443, "/etc/certs/gluu_https.crt")
+            get_server_certificate(manager.config.get("hostname"), 443, "/etc/certs/web_https.crt")
 
     cert_to_truststore(
-        "gluu_https",
-        "/etc/certs/gluu_https.crt",
+        "web_https",
+        "/etc/certs/web_https.crt",
         "/usr/lib/jvm/default-jvm/jre/lib/security/cacerts",
         "changeit",
     )
@@ -139,12 +139,12 @@ def render_client_api_config():
     persistence_type = os.environ.get("CN_PERSISTENCE_TYPE", "ldap")
 
     if persistence_type in ("ldap", "hybrid"):
-        conn = "gluu-ldap.properties"
+        conn = "jans-ldap.properties"
     else:
         # likely "couchbase"
-        conn = "gluu-couchbase.properties"
+        conn = "jans-couchbase.properties"
 
-    data["storage_configuration"]["connection"] = f"/etc/gluu/conf/{conn}"
+    data["storage_configuration"]["connection"] = f"/etc/jans/conf/{conn}"
 
     ip_addresses = os.environ.get("CN_CLIENT_API_BIND_IP_ADDRESSES", "*")
     data["bind_ip_addresses"] = [
@@ -160,29 +160,29 @@ def render_client_api_config():
 def main():
     persistence_type = os.environ.get("CN_PERSISTENCE_TYPE", "ldap")
 
-    render_salt(manager, "/app/templates/salt.tmpl", "/etc/gluu/conf/salt")
-    render_gluu_properties("/app/templates/gluu.properties.tmpl", "/etc/gluu/conf/gluu.properties")
+    render_salt(manager, "/app/templates/salt.tmpl", "/etc/jans/conf/salt")
+    render_jans_properties("/app/templates/jans.properties.tmpl", "/etc/jans/conf/jans.properties")
 
     if persistence_type in ("ldap", "hybrid"):
         render_ldap_properties(
             manager,
-            "/app/templates/gluu-ldap.properties.tmpl",
-            "/etc/gluu/conf/gluu-ldap.properties",
+            "/app/templates/jans-ldap.properties.tmpl",
+            "/etc/jans/conf/jans-ldap.properties",
         )
         sync_ldap_truststore(manager)
 
     if persistence_type in ("couchbase", "hybrid"):
         render_couchbase_properties(
             manager,
-            "/app/templates/gluu-couchbase.properties.tmpl",
-            "/etc/gluu/conf/gluu-couchbase.properties",
+            "/app/templates/jans-couchbase.properties.tmpl",
+            "/etc/jans/conf/jans-couchbase.properties",
         )
         sync_couchbase_truststore(manager)
 
     if persistence_type == "hybrid":
-        render_hybrid_properties("/etc/gluu/conf/gluu-hybrid.properties")
+        render_hybrid_properties("/etc/jans/conf/jans-hybrid.properties")
 
-    get_gluu_cert()
+    get_web_cert()
 
     # if not os.path.isfile("/opt/client-api/client-api-server.yml"):
     render_client_api_config()

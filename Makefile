@@ -1,4 +1,4 @@
-CN_VERSION=4.2.2
+CN_VERSION=5.0.0
 IMAGE_NAME=janssenproject/client-api
 UNSTABLE_VERSION=dev
 

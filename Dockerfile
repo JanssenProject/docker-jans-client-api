@@ -19,11 +19,12 @@ RUN apk update \
 
 ENV CN_VERSION=5.0.0-SNAPSHOT
 ENV CN_BUILD_DATE="2020-10-20 10:47"
+ENV CN_SOURCE_URL=https://maven.jans.io/maven/io/jans/jans-client-api-server/${CN_VERSION}/jans-client-api-server-${CN_VERSION}-distribution.zip
 
-RUN wget -q https://maven.jans.io/maven/io/jans/jans-client-api-server//${CN_VERSION}/jans-client-api-${CN_VERSION}-distribution.zip -O /client-api.zip \
+RUN wget -q ${CN_SOURCE_URL} -O /tmp/client-api.zip \
     && mkdir -p /opt/client-api \
-    && unzip -qq /client-api.zip -d /opt/client-api \
-    && rm /client-api.zip \
+    && unzip -qq /tmp/client-api.zip -d /opt/client-api \
+    && rm /tmp/client-api.zip \
     && rm -rf /opt/client-api/conf/client-api-server.keystore /opt/client-api/conf/client-api-server.yml
 
 EXPOSE 8443 8444
@@ -36,7 +37,7 @@ RUN apk add --no-cache py3-cryptography
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -U pip \
     && pip3 install --no-cache-dir -r /app/requirements.txt \
-    && rm -rf /src/pygluu-containerlib/.git
+    && rm -rf /src/jans-pycloudlib/.git
 
 # =======
 # Cleanup
@@ -66,8 +67,9 @@ ENV CN_CONFIG_ADAPTER=consul \
     CN_CONFIG_CONSUL_CERT_FILE=/etc/certs/consul_client.crt \
     CN_CONFIG_CONSUL_KEY_FILE=/etc/certs/consul_client.key \
     CN_CONFIG_CONSUL_TOKEN_FILE=/etc/certs/consul_token \
+    CN_CONFIG_CONSUL_NAMESPACE=jans \
     CN_CONFIG_KUBERNETES_NAMESPACE=default \
-    CN_CONFIG_KUBERNETES_CONFIGMAP=gluu \
+    CN_CONFIG_KUBERNETES_CONFIGMAP=jans \
     CN_CONFIG_KUBERNETES_USE_KUBE_CONFIG=false
 
 # ==========
@@ -84,8 +86,9 @@ ENV CN_SECRET_ADAPTER=vault \
     CN_SECRET_VAULT_CERT_FILE=/etc/certs/vault_client.crt \
     CN_SECRET_VAULT_KEY_FILE=/etc/certs/vault_client.key \
     CN_SECRET_VAULT_CACERT_FILE=/etc/certs/vault_ca.crt \
+    CN_SECRET_VAULT_NAMESPACE=jans \
     CN_SECRET_KUBERNETES_NAMESPACE=default \
-    CN_SECRET_KUBERNETES_SECRET=gluu \
+    CN_SECRET_KUBERNETES_SECRET=jans \
     CN_SECRET_KUBERNETES_USE_KUBE_CONFIG=false
 
 # ===============
@@ -98,17 +101,17 @@ ENV CN_PERSISTENCE_TYPE=ldap \
     CN_COUCHBASE_URL=localhost \
     CN_COUCHBASE_USER=admin \
     CN_COUCHBASE_CERT_FILE=/etc/certs/couchbase.crt \
-    CN_COUCHBASE_PASSWORD_FILE=/etc/gluu/conf/couchbase_password \
+    CN_COUCHBASE_PASSWORD_FILE=/etc/jans/conf/couchbase_password \
     CN_COUCHBASE_CONN_TIMEOUT=10000 \
     CN_COUCHBASE_CONN_MAX_WAIT=20000 \
     CN_COUCHBASE_SCAN_CONSISTENCY=not_bounded
 
-# =======
+# ==============
 # client-api ENV
-# =======
+# ==============
 
-ENV CN_CLIENT_API_APPLICATION_CERT_CN="localhost" \
-    CN_CLIENT_API_ADMIN_CERT_CN="localhost" \
+ENV CN_CLIENT_API_APPLICATION_CERT_CN=localhost \
+    CN_CLIENT_API_ADMIN_CERT_CN=localhost \
     CN_CLIENT_API_BIND_IP_ADDRESSES="*"
 
 # ===========
@@ -119,21 +122,22 @@ ENV CN_MAX_RAM_PERCENTAGE=75.0 \
     CN_WAIT_MAX_TIME=300 \
     CN_WAIT_SLEEP_DURATION=10 \
     CN_JAVA_OPTIONS="" \
-    CN_SSL_CERT_FROM_SECRETS=false
+    CN_SSL_CERT_FROM_SECRETS=false \
+    CN_NAMESPACE=jans
 
 # ====
 # misc
 # ====
 
 LABEL name="Client API" \
-    maintainer="Gluu Inc. <support@gluu.org>" \
+    maintainer="Janssen Project <support@jans.io>" \
     vendor="Janssen" \
     version="5.0.0" \
     release="dev" \
-    summary="Gluu client API" \
+    summary="Janssen Client API" \
     description="Client software to secure apps with OAuth 2.0, OpenID Connect, and UMA"
 
-RUN mkdir -p /etc/certs /app/templates/ /deploy /etc/gluu/conf
+RUN mkdir -p /etc/certs /app/templates/ /deploy /etc/jans/conf
 COPY scripts /app/scripts
 COPY templates/*.tmpl /app/templates/
 RUN chmod +x /app/scripts/entrypoint.sh
