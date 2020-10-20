@@ -23,7 +23,7 @@ manager = get_manager()
 
 def get_gluu_cert():
     if not os.path.isfile("/etc/certs/gluu_https.crt"):
-        if as_boolean(os.environ.get("JANS_SSL_CERT_FROM_SECRETS", False)):
+        if as_boolean(os.environ.get("CLOUD_NATIVE_SSL_CERT_FROM_SECRETS", False)):
             manager.secret.to_file("ssl_cert", "/etc/certs/gluu_https.crt")
         else:
             get_server_certificate(manager.config.get("hostname"), 443, "/etc/certs/gluu_https.crt")
@@ -84,7 +84,7 @@ class Connector:
         # backward-compat with 4.1.x
         if f"{conn_type}_KEYSTORE_CN" in os.environ:
             return os.environ.get(f"{conn_type}_KEYSTORE_CN", "localhost")
-        return os.environ.get(f"JANS_CLIENT_API_{conn_type}_CERT_CN", "localhost")
+        return os.environ.get(f"CLOUD_NATIVE_CLIENT_API_{conn_type}_CERT_CN", "localhost")
 
     def sync_x509(self):
         try:
@@ -136,7 +136,7 @@ def render_client_api_config():
     data["server"]["adminConnectors"][0]["keyStorePassword"] = admin_connector.get_keystore_password()
     data["server"]["adminConnectors"][0]["keyStorePath"] = admin_connector.keystore_file
 
-    persistence_type = os.environ.get("JANS_PERSISTENCE_TYPE", "ldap")
+    persistence_type = os.environ.get("CLOUD_NATIVE_PERSISTENCE_TYPE", "ldap")
 
     if persistence_type in ("ldap", "hybrid"):
         conn = "gluu-ldap.properties"
@@ -146,7 +146,7 @@ def render_client_api_config():
 
     data["storage_configuration"]["connection"] = f"/etc/gluu/conf/{conn}"
 
-    ip_addresses = os.environ.get("JANS_CLIENT_API_BIND_IP_ADDRESSES", "*")
+    ip_addresses = os.environ.get("CLOUD_NATIVE_CLIENT_API_BIND_IP_ADDRESSES", "*")
     data["bind_ip_addresses"] = [
         addr.strip()
         for addr in ip_addresses.split(",")
@@ -158,7 +158,7 @@ def render_client_api_config():
 
 
 def main():
-    persistence_type = os.environ.get("JANS_PERSISTENCE_TYPE", "ldap")
+    persistence_type = os.environ.get("CLOUD_NATIVE_PERSISTENCE_TYPE", "ldap")
 
     render_salt(manager, "/app/templates/salt.tmpl", "/etc/gluu/conf/salt")
     render_gluu_properties("/app/templates/gluu.properties.tmpl", "/etc/gluu/conf/gluu.properties")

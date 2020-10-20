@@ -17,10 +17,10 @@ RUN apk update \
 # Client API
 # ==========
 
-ENV JANS_VERSION=5.0.0-SNAPSHOT
-ENV JANS_BUILD_DATE="2020-09-24 08:33"
+ENV CLOUD_NATIVE_VERSION=5.0.0-SNAPSHOT
+ENV CLOUD_NATIVE_BUILD_DATE="2020-09-24 08:33"
 
-RUN wget -q https://ox.gluu.org/maven/org/gluu/client-api/${JANS_VERSION}/client-api-${JANS_VERSION}-distribution.zip -O /client-api.zip \
+RUN wget -q https://ox.gluu.org/maven/org/gluu/client-api/${CLOUD_NATIVE_VERSION}/client-api-${CLOUD_NATIVE_VERSION}-distribution.zip -O /client-api.zip \
     && mkdir -p /opt/client-api \
     && unzip -qq /client-api.zip -d /opt/client-api \
     && rm /client-api.zip \
@@ -56,70 +56,70 @@ COPY LICENSE /licenses/
 # Config ENV
 # ==========
 
-ENV JANS_CONFIG_ADAPTER=consul \
-    JANS_CONFIG_CONSUL_HOST=localhost \
-    JANS_CONFIG_CONSUL_PORT=8500 \
-    JANS_CONFIG_CONSUL_CONSISTENCY=stale \
-    JANS_CONFIG_CONSUL_SCHEME=http \
-    JANS_CONFIG_CONSUL_VERIFY=false \
-    JANS_CONFIG_CONSUL_CACERT_FILE=/etc/certs/consul_ca.crt \
-    JANS_CONFIG_CONSUL_CERT_FILE=/etc/certs/consul_client.crt \
-    JANS_CONFIG_CONSUL_KEY_FILE=/etc/certs/consul_client.key \
-    JANS_CONFIG_CONSUL_TOKEN_FILE=/etc/certs/consul_token \
-    JANS_CONFIG_KUBERNETES_NAMESPACE=default \
-    JANS_CONFIG_KUBERNETES_CONFIGMAP=gluu \
-    JANS_CONFIG_KUBERNETES_USE_KUBE_CONFIG=false
+ENV CLOUD_NATIVE_CONFIG_ADAPTER=consul \
+    CLOUD_NATIVE_CONFIG_CONSUL_HOST=localhost \
+    CLOUD_NATIVE_CONFIG_CONSUL_PORT=8500 \
+    CLOUD_NATIVE_CONFIG_CONSUL_CONSISTENCY=stale \
+    CLOUD_NATIVE_CONFIG_CONSUL_SCHEME=http \
+    CLOUD_NATIVE_CONFIG_CONSUL_VERIFY=false \
+    CLOUD_NATIVE_CONFIG_CONSUL_CACERT_FILE=/etc/certs/consul_ca.crt \
+    CLOUD_NATIVE_CONFIG_CONSUL_CERT_FILE=/etc/certs/consul_client.crt \
+    CLOUD_NATIVE_CONFIG_CONSUL_KEY_FILE=/etc/certs/consul_client.key \
+    CLOUD_NATIVE_CONFIG_CONSUL_TOKEN_FILE=/etc/certs/consul_token \
+    CLOUD_NATIVE_CONFIG_KUBERNETES_NAMESPACE=default \
+    CLOUD_NATIVE_CONFIG_KUBERNETES_CONFIGMAP=gluu \
+    CLOUD_NATIVE_CONFIG_KUBERNETES_USE_KUBE_CONFIG=false
 
 # ==========
 # Secret ENV
 # ==========
 
-ENV JANS_SECRET_ADAPTER=vault \
-    JANS_SECRET_VAULT_SCHEME=http \
-    JANS_SECRET_VAULT_HOST=localhost \
-    JANS_SECRET_VAULT_PORT=8200 \
-    JANS_SECRET_VAULT_VERIFY=false \
-    JANS_SECRET_VAULT_ROLE_ID_FILE=/etc/certs/vault_role_id \
-    JANS_SECRET_VAULT_SECRET_ID_FILE=/etc/certs/vault_secret_id \
-    JANS_SECRET_VAULT_CERT_FILE=/etc/certs/vault_client.crt \
-    JANS_SECRET_VAULT_KEY_FILE=/etc/certs/vault_client.key \
-    JANS_SECRET_VAULT_CACERT_FILE=/etc/certs/vault_ca.crt \
-    JANS_SECRET_KUBERNETES_NAMESPACE=default \
-    JANS_SECRET_KUBERNETES_SECRET=gluu \
-    JANS_SECRET_KUBERNETES_USE_KUBE_CONFIG=false
+ENV CLOUD_NATIVE_SECRET_ADAPTER=vault \
+    CLOUD_NATIVE_SECRET_VAULT_SCHEME=http \
+    CLOUD_NATIVE_SECRET_VAULT_HOST=localhost \
+    CLOUD_NATIVE_SECRET_VAULT_PORT=8200 \
+    CLOUD_NATIVE_SECRET_VAULT_VERIFY=false \
+    CLOUD_NATIVE_SECRET_VAULT_ROLE_ID_FILE=/etc/certs/vault_role_id \
+    CLOUD_NATIVE_SECRET_VAULT_SECRET_ID_FILE=/etc/certs/vault_secret_id \
+    CLOUD_NATIVE_SECRET_VAULT_CERT_FILE=/etc/certs/vault_client.crt \
+    CLOUD_NATIVE_SECRET_VAULT_KEY_FILE=/etc/certs/vault_client.key \
+    CLOUD_NATIVE_SECRET_VAULT_CACERT_FILE=/etc/certs/vault_ca.crt \
+    CLOUD_NATIVE_SECRET_KUBERNETES_NAMESPACE=default \
+    CLOUD_NATIVE_SECRET_KUBERNETES_SECRET=gluu \
+    CLOUD_NATIVE_SECRET_KUBERNETES_USE_KUBE_CONFIG=false
 
 # ===============
 # Persistence ENV
 # ===============
 
-ENV JANS_PERSISTENCE_TYPE=ldap \
-    JANS_PERSISTENCE_LDAP_MAPPING=default \
-    JANS_LDAP_URL=localhost:1636 \
-    JANS_COUCHBASE_URL=localhost \
-    JANS_COUCHBASE_USER=admin \
-    JANS_COUCHBASE_CERT_FILE=/etc/certs/couchbase.crt \
-    JANS_COUCHBASE_PASSWORD_FILE=/etc/gluu/conf/couchbase_password \
-    JANS_COUCHBASE_CONN_TIMEOUT=10000 \
-    JANS_COUCHBASE_CONN_MAX_WAIT=20000 \
-    JANS_COUCHBASE_SCAN_CONSISTENCY=not_bounded
+ENV CLOUD_NATIVE_PERSISTENCE_TYPE=ldap \
+    CLOUD_NATIVE_PERSISTENCE_LDAP_MAPPING=default \
+    CLOUD_NATIVE_LDAP_URL=localhost:1636 \
+    CLOUD_NATIVE_COUCHBASE_URL=localhost \
+    CLOUD_NATIVE_COUCHBASE_USER=admin \
+    CLOUD_NATIVE_COUCHBASE_CERT_FILE=/etc/certs/couchbase.crt \
+    CLOUD_NATIVE_COUCHBASE_PASSWORD_FILE=/etc/gluu/conf/couchbase_password \
+    CLOUD_NATIVE_COUCHBASE_CONN_TIMEOUT=10000 \
+    CLOUD_NATIVE_COUCHBASE_CONN_MAX_WAIT=20000 \
+    CLOUD_NATIVE_COUCHBASE_SCAN_CONSISTENCY=not_bounded
 
 # =======
 # client-api ENV
 # =======
 
-ENV JANS_CLIENT_API_APPLICATION_CERT_CN="localhost" \
-    JANS_CLIENT_API_ADMIN_CERT_CN="localhost" \
-    JANS_CLIENT_API_BIND_IP_ADDRESSES="*"
+ENV CLOUD_NATIVE_CLIENT_API_APPLICATION_CERT_CN="localhost" \
+    CLOUD_NATIVE_CLIENT_API_ADMIN_CERT_CN="localhost" \
+    CLOUD_NATIVE_CLIENT_API_BIND_IP_ADDRESSES="*"
 
 # ===========
 # Generic ENV
 # ===========
 
-ENV JANS_MAX_RAM_PERCENTAGE=75.0 \
-    JANS_WAIT_MAX_TIME=300 \
-    JANS_WAIT_SLEEP_DURATION=10 \
-    JANS_JAVA_OPTIONS="" \
-    JANS_SSL_CERT_FROM_SECRETS=false
+ENV CLOUD_NATIVE_MAX_RAM_PERCENTAGE=75.0 \
+    CLOUD_NATIVE_WAIT_MAX_TIME=300 \
+    CLOUD_NATIVE_WAIT_SLEEP_DURATION=10 \
+    CLOUD_NATIVE_JAVA_OPTIONS="" \
+    CLOUD_NATIVE_SSL_CERT_FROM_SECRETS=false
 
 # ====
 # misc

@@ -14,7 +14,7 @@ fi
 exec java \
     -Djava.net.preferIPv4Stack=true \
     -XX:+UseContainerSupport \
-    -XX:MaxRAMPercentage=$JANS_MAX_RAM_PERCENTAGE \
-    ${JANS_JAVA_OPTIONS} \
+    -XX:MaxRAMPercentage=$CLOUD_NATIVE_MAX_RAM_PERCENTAGE \
+    ${CLOUD_NATIVE_JAVA_OPTIONS} \
     -cp /opt/client-api/client-api.jar:/opt/client-api/lib/* \
     org.gluu.client-api.server.client-apiServerApplication server /opt/client-api/conf/client-api.yml
