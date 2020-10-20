@@ -17,4 +17,4 @@ exec java \
     -XX:MaxRAMPercentage=$CLOUD_NATIVE_MAX_RAM_PERCENTAGE \
     ${CLOUD_NATIVE_JAVA_OPTIONS} \
     -cp /opt/client-api/client-api.jar:/opt/client-api/lib/* \
-    org.gluu.client-api.server.client-apiServerApplication server /opt/client-api/conf/client-api.yml
+    org.gluu.client-api.server.client-apiServerApplication server /opt/client-api/conf/client-api-server.yml

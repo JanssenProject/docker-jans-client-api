@@ -18,13 +18,13 @@ RUN apk update \
 # ==========
 
 ENV CLOUD_NATIVE_VERSION=5.0.0-SNAPSHOT
-ENV CLOUD_NATIVE_BUILD_DATE="2020-09-24 08:33"
+ENV CLOUD_NATIVE_BUILD_DATE="2020-10-20 10:47"
 
-RUN wget -q https://ox.gluu.org/maven/org/gluu/client-api/${CLOUD_NATIVE_VERSION}/client-api-${CLOUD_NATIVE_VERSION}-distribution.zip -O /client-api.zip \
+RUN wget -q https://maven.jans.io/maven/io/jans/jans-client-api-server//${CLOUD_NATIVE_VERSION}/jans-client-api-${CLOUD_NATIVE_VERSION}-distribution.zip -O /client-api.zip \
     && mkdir -p /opt/client-api \
     && unzip -qq /client-api.zip -d /opt/client-api \
     && rm /client-api.zip \
-    && rm -rf /opt/client-api/conf/client-api.keystore /opt/client-api/conf/client-api.yml
+    && rm -rf /opt/client-api/conf/client-api-server.keystore /opt/client-api/conf/client-api-server.yml
 
 EXPOSE 8443 8444
 

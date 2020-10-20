@@ -128,7 +128,7 @@ def render_client_api_config():
     admin_connector = Connector(manager, "admin")
     admin_connector.sync()
 
-    with open("/app/templates/client_api.yml.tmpl") as f:
+    with open("/app/templates/client-api-server.yml.tmpl") as f:
         data = safe_load(f.read())
 
     data["server"]["applicationConnectors"][0]["keyStorePassword"] = app_connector.get_keystore_password()
@@ -153,7 +153,7 @@ def render_client_api_config():
         if addr
     ]
 
-    with open("/opt/client-api/conf/client_api.yml", "w") as f:
+    with open("/opt/client-api/conf/client-api-server.yml", "w") as f:
         f.write(safe_dump(data))
 
 
@@ -184,7 +184,7 @@ def main():
 
     get_gluu_cert()
 
-    # if not os.path.isfile("/opt/client-api/client-api.yml"):
+    # if not os.path.isfile("/opt/client-api/client-api-server.yml"):
     render_client_api_config()
 
 
