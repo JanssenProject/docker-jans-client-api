@@ -123,18 +123,8 @@ class Connector:
 
 
 def render_client_api_config():
-    app_connector = Connector(manager, "application")
-    app_connector.sync()
-    admin_connector = Connector(manager, "admin")
-    admin_connector.sync()
-
     with open("/app/templates/client-api-server.yml.tmpl") as f:
         data = safe_load(f.read())
-
-    data["server"]["applicationConnectors"][0]["keyStorePassword"] = app_connector.get_keystore_password()
-    data["server"]["applicationConnectors"][0]["keyStorePath"] = app_connector.keystore_file
-    data["server"]["adminConnectors"][0]["keyStorePassword"] = admin_connector.get_keystore_password()
-    data["server"]["adminConnectors"][0]["keyStorePath"] = admin_connector.keystore_file
 
     persistence_type = os.environ.get("CN_PERSISTENCE_TYPE", "ldap")
 
@@ -144,15 +134,33 @@ def render_client_api_config():
         # likely "couchbase"
         conn = "jans-couchbase.properties"
 
-    data["storage_configuration"]["connection"] = f"/etc/jans/conf/{conn}"
+    # data["storage"] = "jans_server_configuration"
+    data["storage"] = "gluu_server_configuration"
+    data["storage_configuration"] = {
+        "baseDn": "o=jans",
+        "type": "/etc/jans/conf/jans.properties",
+        "salt": "/etc/jans/conf/salt",
+        "connection": f"/etc/jans/conf/{conn}",
+    }
 
-    ip_addresses = os.environ.get("CN_CLIENT_API_BIND_IP_ADDRESSES", "*")
-    data["bind_ip_addresses"] = [
-        addr.strip()
-        for addr in ip_addresses.split(",")
-        if addr
-    ]
+    app_connector = Connector(manager, "application")
+    app_connector.sync()
+    admin_connector = Connector(manager, "admin")
+    admin_connector.sync()
 
+    data["server"]["applicationConnectors"][0]["keyStorePassword"] = app_connector.get_keystore_password()
+    data["server"]["applicationConnectors"][0]["keyStorePath"] = app_connector.keystore_file
+    data["server"]["adminConnectors"][0]["keyStorePassword"] = admin_connector.get_keystore_password()
+    data["server"]["adminConnectors"][0]["keyStorePath"] = admin_connector.keystore_file
+
+    # ip_addresses = os.environ.get("CN_CLIENT_API_BIND_IP_ADDRESSES", "*")
+    # data["bind_ip_addresses"] = [
+    #     addr.strip()
+    #     for addr in ip_addresses.split(",")
+    #     if addr
+    # ]
+
+    # write config
     with open("/opt/client-api/conf/client-api-server.yml", "w") as f:
         f.write(safe_dump(data))
 

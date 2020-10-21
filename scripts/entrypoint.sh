@@ -5,7 +5,7 @@ set -e
 python3 /app/scripts/wait.py
 
 if [ ! -f /deploy/touched ]; then
-    python3 /app/scripts/entrypoint.py
+    python3 /app/scripts/bootstrap.py
     touch /deploy/touched
 fi
 
@@ -17,4 +17,4 @@ exec java \
     -XX:MaxRAMPercentage=$CN_MAX_RAM_PERCENTAGE \
     ${CN_JAVA_OPTIONS} \
     -cp /opt/client-api/client-api.jar:/opt/client-api/lib/* \
-    org.gluu.client-api.server.client-apiServerApplication server /opt/client-api/conf/client-api-server.yml
+    io.jans.ca.server.RpServerApplication server /opt/client-api/conf/client-api-server.yml
