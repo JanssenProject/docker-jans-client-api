@@ -18,7 +18,7 @@ RUN apk update \
 # ==========
 
 ENV CN_VERSION=5.0.0-SNAPSHOT
-ENV CN_BUILD_DATE="2020-10-20 10:47"
+ENV CN_BUILD_DATE="2020-10-28 16:10"
 ENV CN_SOURCE_URL=https://maven.jans.io/maven/io/jans/jans-client-api-server/${CN_VERSION}/jans-client-api-server-${CN_VERSION}-distribution.zip
 
 RUN wget -q ${CN_SOURCE_URL} -O /tmp/client-api.zip \
@@ -33,7 +33,6 @@ EXPOSE 8443 8444
 # Python
 # ======
 
-RUN apk add --no-cache #py3-cryptography
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -U pip \
     && pip3 install --no-cache-dir -r /app/requirements.txt \
