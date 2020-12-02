@@ -16,6 +16,7 @@ from jans.pycloudlib.utils import get_server_certificate
 from jans.pycloudlib.utils import get_random_chars
 from jans.pycloudlib.utils import exec_cmd
 from jans.pycloudlib.utils import as_boolean
+from jans.pycloudlib.utils import generate_ssl_certkey
 
 
 manager = get_manager()
@@ -34,18 +35,6 @@ def get_web_cert():
         "/usr/lib/jvm/default-jvm/jre/lib/security/cacerts",
         "changeit",
     )
-
-
-def generate_x509(cert_file, key_file, cert_cn):
-    out, err, code = exec_cmd(
-        "openssl req -x509 -newkey rsa:2048 "
-        f"-keyout {key_file} "
-        f"-out {cert_file} "
-        f"-subj '/CN={cert_cn}' "
-        "-days 365 "
-        "-nodes"
-    )
-    assert code == 0, "Failed to generate application cert and key; reason={}".format(err.decode())
 
 
 def generate_keystore(cert_file, key_file, keystore_file, keystore_password):
@@ -91,7 +80,16 @@ class Connector:
             self.manager.secret.to_file(f"client_api_{self.type}_cert", self.cert_file)
             self.manager.secret.to_file(f"client_api_{self.type}_key", self.key_file)
         except TypeError:
-            generate_x509(self.cert_file, self.key_file, self.cert_cn)
+            generate_ssl_certkey(
+                f"client_api_{self.type}",
+                self.manager.config.get("admin_email"),
+                self.manager.config.get("hostname"),
+                self.manager.config.get("orgName"),
+                self.manager.config.get("country_code"),
+                self.manager.config.get("state"),
+                self.manager.config.get("city"),
+                extra_dn=self.cert_cn,
+            )
             # save cert and key to secrets for later use
             self.manager.secret.from_file(f"client_api_{self.type}_cert", self.cert_file)
             self.manager.secret.from_file(f"client_api_{self.type}_key", self.key_file)
